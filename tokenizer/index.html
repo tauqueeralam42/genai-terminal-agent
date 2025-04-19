@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Tokenizer</title>
+    <style>
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: #f3f4f6;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        height: 100vh;
+      }
+
+      .left-side {
+        width: 50%;
+        padding: 30px;
+        background: #ffffff;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .tokenizer-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333; /* Dark text */
+        margin-bottom: 15px; /* Space between title and select container */
+      }
+
+      .select-container {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+
+      select {
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+      }
+
+      textarea {
+        width: 93%;
+        height: 200px;
+        padding: 12px;
+        margin-bottom: 20px;
+        font-size: 16px;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        resize: none;
+      }
+
+      button {
+        width: 100%;
+        padding: 12px;
+        background-color: #000000; /* Dark button */
+        color: #ffffff;
+        font-weight: bold;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      button:hover {
+        background-color: #1d4ed8;
+      }
+
+      /* Right side - Token count and output */
+      .right-side {
+        width: 50%;
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+      }
+
+      .right-side .top {
+        background: #ffffff;
+        padding: 20px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .right-side .bottom {
+        background: #ffffff;
+        padding: 20px;
+        flex-grow: 1;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .output {
+        background: #f9fafb;
+        padding: 10px;
+        border-radius: 8px;
+        overflow-wrap: break-word;
+        height: 100%;
+      }
+
+      .output h3 {
+        margin-bottom: 10px;
+        font-weight: 600;
+      }
+
+      .error {
+        color: red;
+        font-weight: bold;
+      }
+
+      .token-count {
+        font-weight: bold;
+        font-size: 16px;
+        color: #000;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="left-side">
+      <div class="select-container">
+        <!-- Tokenizer Title -->
+        <div class="tokenizer-title">Tokenizer</div>
+
+        <div>
+          <!-- Dropdown for Encode/Decode Selection -->
+          <select id="actionSelect" onchange="updatePlaceholderAndButton()">
+            <option value="encode">Encoder</option>
+            <option value="decode">Decoder</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Textarea for user input with dynamic placeholder -->
+      <textarea id="inputText" placeholder="Hello"></textarea>
+
+      <!-- Submit Button -->
+      <button id="submitButton" onclick="processText()">Encode</button>
+    </div>
+
+    <div class="right-side">
+      <!-- Token Count -->
+      <div class="top">
+        <span class="token-count" id="tokenCount">Token Count: 0</span>
+      </div>
+
+      <!-- Output Section -->
+      <div class="bottom">
+        <div class="output" id="outputSection" style="display: none">
+          <h3 id="outputTitle"></h3>
+          <p id="outputResult"></p>
+          <p id="errorMessage" class="error" style="display: none"></p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Function to update placeholder and button text based on selection
+      function updatePlaceholderAndButton() {
+        const action = document.getElementById("actionSelect").value;
+        const inputField = document.getElementById("inputText");
+        const submitButton = document.getElementById("submitButton");
+
+        // Clear the input text when switching between Encoder and Decoder
+        inputField.value = ""; // This clears the input field
+
+        if (action === "encode") {
+          inputField.placeholder = "Hello";
+          submitButton.textContent = "Encode";
+        } else if (action === "decode") {
+          inputField.placeholder = "[ 72, 101, 108, 108, 111 ]";
+          submitButton.textContent = "Decode";
+        }
+      }
+
+      // Function to process the text based on encode/decode action
+      function processText() {
+        const action = document.getElementById("actionSelect").value;
+        const input = document.getElementById("inputText").value.trim();
+        const errorMessage = document.getElementById("errorMessage");
+        const tokenCount = document.getElementById("tokenCount");
+
+        // Clear error message
+        errorMessage.style.display = "none";
+
+        if (action === "encode") {
+          // Encoding: Convert characters to token IDs (Unicode values)
+          const tokens = Array.from(input).map((char) => char.charCodeAt(0));
+          tokenCount.textContent = `Token Count: ${tokens.length}`;
+          document.getElementById("outputTitle").textContent =
+            "Encoded Tokens:";
+          document.getElementById(
+            "outputResult"
+          ).textContent = `[ ${tokens.join(", ")} ]`;
+        } else if (action === "decode") {
+          // Decoding: Validate the input format
+          if (input.startsWith("[") && input.endsWith("]")) {
+            const tokens = input
+              .slice(1, -1)
+              .split(",")
+              .map((item) => item.trim());
+            if (tokens.every((token) => /^\d+$/.test(token))) {
+              const decodedText = tokens
+                .map((code) => String.fromCharCode(parseInt(code)))
+                .join("");
+              tokenCount.textContent = `Token Count: ${tokens.length}`;
+              document.getElementById("outputTitle").textContent =
+                "Decoded Text:";
+              document.getElementById("outputResult").textContent = decodedText;
+            } else {
+              // Invalid token (non-integer)
+              errorMessage.textContent =
+                "Error: Please provide a valid comma-separated array of integers inside brackets.";
+              errorMessage.style.display = "block";
+              return;
+            }
+          } else {
+            // Invalid format (missing brackets)
+            errorMessage.textContent =
+              "Error: Input should be in the format [ 72, 101, 108, 108, 111 ]";
+            errorMessage.style.display = "block";
+            return;
+          }
+        }
+
+        // Show output section
+        document.getElementById("outputSection").style.display = "block";
+      }
+
+      // Call the function on load to set the default placeholder and button text
+      window.onload = updatePlaceholderAndButton;
+    </script>
+  </body>
+</html>
