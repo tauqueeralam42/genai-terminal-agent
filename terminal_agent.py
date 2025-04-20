@@ -114,12 +114,16 @@ def git_push(params):
     except Exception as e:
         return f"❌ Git push failed: {e}"
 
+import os
+import time
+
 def create_tic_tac_toe_project(folder_name):
     print(f"🎮 Starting Tic-Tac-Toe game setup in: `{folder_name}`")
     os.makedirs(folder_name, exist_ok=True)
-
-    # HTML
+    
+    # Step 1: Creating HTML
     print("📄 Creating `index.html`...")
+    time.sleep(2)
     html = """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -136,11 +140,11 @@ def create_tic_tac_toe_project(folder_name):
 </html>"""
     with open(os.path.join(folder_name, "index.html"), "w") as f:
         f.write(html)
-    time.sleep(2)
-    print("✅ `index.html` created.")
+    print("✅ `index.html` created successfully.\n")
 
-    # CSS
+    # Step 2: Creating CSS
     print("🎨 Creating `style.css`...")
+    time.sleep(2)
     css = """body {
   height: 100vh;
   margin: 0;
@@ -188,6 +192,73 @@ button {
 """
     with open(os.path.join(folder_name, "style.css"), "w") as f:
         f.write(css)
+    print("✅ `style.css` created successfully.\n")
+
+    # Step 3: Creating JS
+    print("⚙️ Creating `script.js`...")
+    time.sleep(2)
+    js = """const board = document.getElementById('board');
+let currentPlayer = 'X';
+let cells = Array(9).fill(null);
+
+function renderBoard() {
+  board.innerHTML = '';
+  cells.forEach((cell, index) => {
+    const cellDiv = document.createElement('div');
+    cellDiv.textContent = cell;
+    cellDiv.addEventListener('click', () => makeMove(index));
+    board.appendChild(cellDiv);
+  });
+}
+
+function makeMove(index) {
+  if (!cells[index]) {
+    cells[index] = currentPlayer;
+    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    renderBoard();
+    checkWinner();
+  }
+}
+
+function resetGame() {
+  cells = Array(9).fill(null);
+  currentPlayer = 'X';
+  renderBoard();
+}
+
+function checkWinner() {
+  const winningCombos = [
+    [0,1,2],[3,4,5],[6,7,8],
+    [0,3,6],[1,4,7],[2,5,8],
+    [0,4,8],[2,4,6]
+  ];
+  
+  for (const combo of winningCombos) {
+    const [a,b,c] = combo;
+    if (cells[a] && cells[a] === cells[b] && cells[a] === cells[c]) {
+      alert(`${cells[a]} wins!`);
+      resetGame();
+      return;
+    }
+  }
+
+  if (!cells.includes(null)) {
+    alert("It's a draw!");
+    resetGame();
+  }
+}
+
+renderBoard();"""
+    with open(os.path.join(folder_name, "script.js"), "w") as f:
+        f.write(js)
+    print("✅ `script.js` created successfully.\n")
+
+    # Final message
+    time.sleep(1)
+    print("🎉 Your Tic-Tac-Toe project has been set up successfully! Ready to play! 🚀")
+
+# Example usage:
+# create_tic_tac_toe_project("tic_tac_toe")
 
 
 def create_snake_game_project(folder_name):
@@ -659,8 +730,10 @@ system_prompt = """
 messages = [{"role": "system", "content": system_prompt}]
 
 # ------------------ Interaction Loop ------------------ #
+print("💬 Hey Tauqueer! 😊 What would you like me to help you with today? Just type your message below and I’ll do my magic! ✨")
 while True:
     user_input = input("🧑‍💻 -> ")
+
     if user_input.lower() in ["exit", "quit"]:
         break
 
