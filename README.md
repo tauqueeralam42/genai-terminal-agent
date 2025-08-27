@@ -67,3 +67,20 @@ python chat_3.py
 ``` 
 python terminal_agent.py
 ```
+
+## 🎯 Learning Outcomes  
+
+- Hands-on experience with **OpenAI SDK** and **Gemini API**.  
+- Building **domain-specific assistants** with controlled responses.  
+- Implementing **step-by-step reasoning pipelines**.  
+- Designing a **terminal AI agent** capable of coding, executing, and pushing projects to GitHub.  
+- Exploring how **AI can act as a teammate** in software development workflows.  
+
+---
+
+## 📌 Future Enhancements  
+
+- Integrate **RAG (Retrieval-Augmented Generation)** for external knowledge support.  
+- Add **memory-based conversation tracking**.  
+- Extend the agent with **API integrations and database operations**.  
+
